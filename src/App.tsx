@@ -21,19 +21,32 @@ function App() {
     if ("IntersectionObserver" in window) {
       // has support
       const lazyImgs = document.querySelectorAll("[lazy-src]");
+      const cards = document.querySelectorAll(".card");
       const observer = new IntersectionObserver((entries) => {
         // thuộc tính isIntersecting (true/false) dùng để check xem img này có trong viewport (hiển thị ở màn hình hiện tại không), true là có, false là không
         // thuộc tính intersectionRatio là % khung chứa img này được hiển thị trên viewport
         console.log(entries);
-        entries.forEach((entry) => {
-          // console.log(entry.isIntersecting);
-          // console.log(entry.target); // is src of img
-          load(entry.target);
-        });
+        // những element xuất hiện trong viewport
+        entries.forEach(
+          (entry) => {
+            // console.log(entry.isIntersecting);
+            // console.log(entry.target); // is src of img
+            load(entry.target);
+            entry.target.classList.toggle("show", entry.isIntersecting);
+            // if (entry.isIntersecting) observer.unobserve(entry.target); // bỏ hiệu ứng load lại data cũ
+          },
+          {
+            threshold: 1,
+            // rootMargin: "-100px",
+          }
+        );
       });
       lazyImgs.forEach((img) => {
         //   console.log(img);
         observer.observe(img);
+      });
+      cards.forEach((card) => {
+        observer.observe(card);
       });
     } else {
       // https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
@@ -89,6 +102,58 @@ function App() {
         src="https://user-images.githubusercontent.com/43302778/106805462-7a908400-6645-11eb-958f-cd72b74a17b3.jpg" // img default
         lazy-src="https://thumbs.dreamstime.com/b/d-mural-wallpaper-beautiful-view-landscape-background-old-arches-tree-sun-water-birds-flowers-transparent-curtains-166191190.jpg"
       /> */}
+      <div className="card-container">
+        <div className="card">This is the first card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>{" "}
+        <div className="card">This is a card</div>
+        <div className="card">This is a card</div>
+        <div className="card">This is the last card</div>
+      </div>
     </div>
   );
 }

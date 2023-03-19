@@ -1,8 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
 import useElementOnScreen from "./hooks/useElementOnScreen";
-
+import Loading from "./loading.gif";
 function App() {
+  const [photos, setPhotos] = useState<any>([]);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [loading, setLoading] = useState(false);
   const myRef: any = useRef(null);
   const isVisible = useElementOnScreen(
     {
@@ -52,6 +55,44 @@ function App() {
       // https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
     }
   };
+  const fetchPhotos = async (pageNumber: number) => {
+    const Access_Key = "VaS3ud1C-0gdW1nw41FbBryaV_Q5obZ04o-3Vi2QC1E";
+    const res = await fetch(
+      `https://api.unsplash.com/photos/?client_id=${Access_Key}&page=${pageNumber}&per_page=10`
+    );
+    const data = await res.json();
+    // console.log(data)
+    setPhotos((p: any) => [...p, ...data]);
+    setLoading(true);
+  };
+  const loadMore = () => {
+    setPageNumber((prevPageNumber) => prevPageNumber + 1);
+  };
+  const pageEnd: any = useRef();
+  // let num = 1;
+  useEffect(() => {
+    if (loading) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            // num++;
+            loadMore();
+            // if (num >= 10) {
+            //   observer.unobserve(pageEnd.current);
+            // }
+          }
+        },
+        { threshold: 1 }
+      );
+      observer.observe(pageEnd.current); // ref element button dùng để check trong viewport
+    }
+  }, [
+    loading,
+    //  num
+  ]);
+  useEffect(() => {
+    fetchPhotos(pageNumber);
+  }, [pageNumber]);
   useEffect(() => {
     handleIntersectionObserver();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -154,6 +195,27 @@ function App() {
         <div className="card">This is a card</div>
         <div className="card">This is the last card</div>
       </div>
+      <h1>Infinite scrolling react hooks</h1>
+      {photos.map((photo: any, index: number) => (
+        <div className="photos" key={index}>
+          <img src={photo.urls.small} alt="" />
+          <p>{photo.user.first_name + " " + photo.user.last_name}</p>
+          <span>Like: {photo.user.total_likes}</span>
+        </div>
+      ))}
+      <div className="loading">
+        <img src={Loading} alt="" />
+      </div>
+
+      <h3>{photos.length}</h3>
+
+      <button
+        style={{ visibility: "hidden" }}
+        // onClick={loadMore}
+        ref={pageEnd}
+      >
+        Load More
+      </button>
     </div>
   );
 }

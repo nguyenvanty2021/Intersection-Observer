@@ -4,6 +4,7 @@ import useElementOnScreen from "./hooks/useElementOnScreen";
 import Loading from "./loading.gif";
 import { fetchImages } from "./utils/fetchImages.js";
 import { Image } from "./component/image";
+import Observer from "./component/Observer";
 const config = {
   rootMargin: "0px 0px 0px 0px",
   threshold: 0.2,
@@ -150,6 +151,7 @@ function App() {
   };
   return (
     <div style={{ display: "flex", flexDirection: "column" }} className="App">
+      <Observer />
       <h1
         style={{
           position: "fixed",

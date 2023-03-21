@@ -116,6 +116,7 @@ function App() {
     );
   }, [page]);
   useEffect(() => {
+    // cách này tối ưu thứ 2
     let observer = new window.IntersectionObserver(function (entries, self) {
       console.log("entries", entries);
       console.log("self", self);

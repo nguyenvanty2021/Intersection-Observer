@@ -4,7 +4,13 @@ import useElementOnScreen from "./hooks/useElementOnScreen";
 import Loading from "./loading.gif";
 import { fetchImages } from "./utils/fetchImages.js";
 import { Image } from "./component/image";
+const config = {
+  rootMargin: "0px 0px 0px 0px",
+  threshold: 0.2,
+};
+
 function App() {
+  const [loaded, setIsLoaded] = useState(false);
   const [page, setPage] = useState(1);
   const [imagesList, setImagesList] = useState<any[]>([]);
   const nextPage = () => {
@@ -109,6 +115,38 @@ function App() {
       setImagesList((prev) => [...prev, ...images])
     );
   }, [page]);
+  useEffect(() => {
+    let observer = new window.IntersectionObserver(function (entries, self) {
+      console.log("entries", entries);
+      console.log("self", self);
+      // iterate over each entry
+      entries.forEach((entry) => {
+        // process just the images that are intersecting.
+        // isIntersecting is a property exposed by the interface
+        if (entry.isIntersecting) {
+          // custom function that copies the path to the img
+          // from data-src to src
+          loadImages(entry.target);
+          // the image is now in place, stop watching
+          self.unobserve(entry.target);
+        }
+      });
+    }, config);
+
+    const imgs = document.querySelectorAll("[data-src]");
+    imgs.forEach((img) => {
+      observer.observe(img);
+    });
+    return () => {
+      imgs.forEach((img) => {
+        observer.unobserve(img);
+      });
+    };
+  }, []);
+
+  const loadImages = (image: any) => {
+    image.src = image.dataset.src;
+  };
   return (
     <div style={{ display: "flex", flexDirection: "column" }} className="App">
       <h1
@@ -155,6 +193,22 @@ function App() {
         src="https://user-images.githubusercontent.com/43302778/106805462-7a908400-6645-11eb-958f-cd72b74a17b3.jpg" // img default
         lazy-src="https://thumbs.dreamstime.com/b/d-mural-wallpaper-beautiful-view-landscape-background-old-arches-tree-sun-water-birds-flowers-transparent-curtains-166191190.jpg"
       /> */}
+      <img
+        data-src="https://thumbs.dreamstime.com/b/d-mural-wallpaper-beautiful-view-landscape-background-old-arches-tree-sun-water-birds-flowers-transparent-curtains-166191190.jpg"
+        alt=""
+        width={500}
+        height={250}
+        className={loaded ? "loaded" : "loading"}
+        onLoad={() => setIsLoaded(true)}
+      />
+      <img
+        data-src="https://us.123rf.com/450wm/maaravic/maaravic2210/maaravic221000286/193002567-background-of-butterflies-of-different-colors-rainbow-different-sizes-and-shapes-very-beautiful.jpg?ver=6"
+        alt=""
+        width={500}
+        height={250}
+        className={loaded ? "loaded" : "loading"}
+        onLoad={() => setIsLoaded(true)}
+      />
       {/* cách này là tối ưu nhất, element nào nằm trong viewport thì mới load image đó lên */}
       {imagesList.map((image: any, index) => (
         <Image

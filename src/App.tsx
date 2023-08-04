@@ -5,13 +5,7 @@ import Loading from "./loading.gif";
 import { fetchImages } from "./utils/fetchImages.js";
 import { Image } from "./component/image";
 import Observer from "./component/Observer";
-const config = {
-  rootMargin: "0px 0px 0px 0px",
-  threshold: 0.2,
-};
-
 function App() {
-  const [loaded, setIsLoaded] = useState(false);
   const [page, setPage] = useState(1);
   const [imagesList, setImagesList] = useState<any[]>([]);
   const nextPage = () => {
@@ -29,15 +23,15 @@ function App() {
     },
     myRef
   );
-  const load = (img: any) => {
-    const url = img.getAttribute("lazy-src");
-    img.setAttribute("src", url);
-    // img.removeAttribute("lazy-src");
-  };
+  // const load = (img: any) => {
+  //   const url = img.getAttribute("lazy-src");
+  //   img.setAttribute("src", url);
+  //   // img.removeAttribute("lazy-src");
+  // };
   const handleIntersectionObserver = () => {
     if ("IntersectionObserver" in window) {
       // has support
-      const lazyImgs = document.querySelectorAll("[lazy-src]");
+      // const lazyImgs = document.querySelectorAll("[lazy-src]");
       const cards = document.querySelectorAll(".card");
       const observer = new IntersectionObserver((entries) => {
         // thuộc tính isIntersecting (true/false) dùng để check xem img này có trong viewport (hiển thị ở màn hình hiện tại không), true là có, false là không
@@ -48,7 +42,8 @@ function App() {
           (entry) => {
             // console.log(entry.isIntersecting);
             // console.log(entry.target); // is src of img
-            load(entry.target);
+            // load(entry.target);
+            // thêm thuộc tính class vào element
             entry.target.classList.toggle("show", entry.isIntersecting);
             // if (entry.isIntersecting) observer.unobserve(entry.target); // bỏ hiệu ứng load lại data cũ
           },
@@ -58,10 +53,10 @@ function App() {
           }
         );
       });
-      lazyImgs.forEach((img) => {
-        //   console.log(img);
-        observer.observe(img);
-      });
+      // lazyImgs.forEach((img) => {
+      //   //   console.log(img);
+      //   observer.observe(img);
+      // });
       cards.forEach((card) => {
         observer.observe(card);
       });
@@ -112,46 +107,46 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
-    fetchImages(page).then((images) =>
-      setImagesList((prev) => [...prev, ...images])
-    );
-  }, [page]);
-  useEffect(() => {
-    // cách này tối ưu thứ 2
-    let observer = new window.IntersectionObserver(function (entries, self) {
-      console.log("entries", entries);
-      console.log("self", self);
-      // iterate over each entry
-      entries.forEach((entry) => {
-        // process just the images that are intersecting.
-        // isIntersecting is a property exposed by the interface
-        if (entry.isIntersecting) {
-          // custom function that copies the path to the img
-          // from data-src to src
-          loadImages(entry.target);
-          // the image is now in place, stop watching
-          self.unobserve(entry.target);
-        }
-      });
-    }, config);
-
-    const imgs = document.querySelectorAll("[data-src]");
-    imgs.forEach((img) => {
-      observer.observe(img);
+    fetchImages(page).then((images) => {
+      console.log(images);
+      setImagesList((prev) => [...prev, ...images]);
     });
-    return () => {
-      imgs.forEach((img) => {
-        observer.unobserve(img);
-      });
-    };
-  }, []);
+  }, [page]);
+  // useEffect(() => {
+  //   // cách này tối ưu thứ 2
+  //   let observer = new window.IntersectionObserver(function (entries, self) {
+  //     console.log("entries", entries);
+  //     console.log("self", self);
+  //     // iterate over each entry
+  //     entries.forEach((entry) => {
+  //       // process just the images that are intersecting.
+  //       // isIntersecting is a property exposed by the interface
+  //       if (entry.isIntersecting) {
+  //         // custom function that copies the path to the img
+  //         // from data-src to src
+  //         loadImages(entry.target);
+  //         // the image is now in place, stop watching
+  //         self.unobserve(entry.target);
+  //       }
+  //     });
+  //   }, config);
 
-  const loadImages = (image: any) => {
-    image.src = image.dataset.src;
-  };
+  //   const imgs = document.querySelectorAll("[data-src]");
+  //   imgs.forEach((img) => {
+  //     observer.observe(img);
+  //   });
+  //   return () => {
+  //     imgs.forEach((img) => {
+  //       observer.unobserve(img);
+  //     });
+  //   };
+  // }, []);
+
+  // const loadImages = (image: any) => {
+  //   image.src = image.dataset.src;
+  // };
   return (
     <div style={{ display: "flex", flexDirection: "column" }} className="App">
-      <Observer />
       <h1
         style={{
           position: "fixed",
@@ -165,53 +160,10 @@ function App() {
       >
         {!isVisible ? "not in viewport" : "in viewport"}
       </h1>
-      <h1 ref={myRef} style={{ backgroundColor: "pink", height: "1000px" }}>
+      <Observer />
+      <h1 ref={myRef} style={{ backgroundColor: "pink" }}>
         123
       </h1>
-      <img
-        ref={myRef}
-        style={{ backgroundColor: "red" }}
-        alt=""
-        src="https://user-images.githubusercontent.com/43302778/106805462-7a908400-6645-11eb-958f-cd72b74a17b3.jpg" // img default
-        lazy-src="https://media.gettyimages.com/id/167866478/photo/strawberry.jpg?s=612x612&w=gi&k=20&c=hP-3tsdT85B3-AHQ8n1r-9IsdLDKNLujVd9xeHeKuqQ="
-      />
-      {/* <img
-        ref={myRef}
-        style={{ backgroundColor: "blue" }}
-        alt=""
-        src="https://user-images.githubusercontent.com/43302778/106805462-7a908400-6645-11eb-958f-cd72b74a17b3.jpg" // img default
-        lazy-src="https://images.pexels.com/photos/326055/pexels-photo-326055.jpeg?cs=srgb&dl=pexels-pixabay-326055.jpg&fm=jpg"
-      />
-      <img
-        ref={myRef}
-        style={{ backgroundColor: "green" }}
-        alt=""
-        src="https://user-images.githubusercontent.com/43302778/106805462-7a908400-6645-11eb-958f-cd72b74a17b3.jpg" // img default
-        lazy-src="https://us.123rf.com/450wm/maaravic/maaravic2210/maaravic221000286/193002567-background-of-butterflies-of-different-colors-rainbow-different-sizes-and-shapes-very-beautiful.jpg?ver=6"
-      />
-      <img
-        ref={myRef}
-        style={{ backgroundColor: "yellow" }}
-        alt=""
-        src="https://user-images.githubusercontent.com/43302778/106805462-7a908400-6645-11eb-958f-cd72b74a17b3.jpg" // img default
-        lazy-src="https://thumbs.dreamstime.com/b/d-mural-wallpaper-beautiful-view-landscape-background-old-arches-tree-sun-water-birds-flowers-transparent-curtains-166191190.jpg"
-      /> */}
-      <img
-        data-src="https://thumbs.dreamstime.com/b/d-mural-wallpaper-beautiful-view-landscape-background-old-arches-tree-sun-water-birds-flowers-transparent-curtains-166191190.jpg"
-        alt=""
-        width={500}
-        height={250}
-        className={loaded ? "loaded" : "loading"}
-        onLoad={() => setIsLoaded(true)}
-      />
-      <img
-        data-src="https://us.123rf.com/450wm/maaravic/maaravic2210/maaravic221000286/193002567-background-of-butterflies-of-different-colors-rainbow-different-sizes-and-shapes-very-beautiful.jpg?ver=6"
-        alt=""
-        width={500}
-        height={250}
-        className={loaded ? "loaded" : "loading"}
-        onLoad={() => setIsLoaded(true)}
-      />
       {/* cách này là tối ưu nhất, element nào nằm trong viewport thì mới load image đó lên */}
       {imagesList.map((image: any, index) => (
         <Image

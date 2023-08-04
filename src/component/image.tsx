@@ -7,7 +7,7 @@ export const Image = ({ image, isLast, nextPage }: any) => {
   const [isVisible, setIsVisible] = useState(false);
   const entry = useObserver(imageRef, { rootMargin: "600px" });
   const animatedEntry = useObserver(imageRef, { rootMargin: "0px" });
-
+  console.log(entry);
   useEffect(() => {
     if (!entry) return;
     if (isLast && entry.isIntersecting) {
@@ -26,11 +26,12 @@ export const Image = ({ image, isLast, nextPage }: any) => {
       setIsVisible(true);
     }
   }, [animatedEntry]);
+  console.log(image);
   const imageClass = `image ${isVisible ? "show" : ""}`;
   return (
-    <div style={{ minHeight: 300 }}>
+    <div className={imageClass} style={{ minHeight: 300 }}>
+      <p>Author: {image.author}</p>
       <img
-        className={imageClass}
         // @ts-ignore
         ref={imageRef}
         src={imageUrl}
